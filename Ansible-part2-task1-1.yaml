@@ -1,0 +1,28 @@
+---
+- name: Скачивание и распаковка архива
+  hosts: My
+  vars:
+    kafka_url: "https://dlcdn.apache.org/kafka/4.1.1/kafka-4.1.1-src.tgz"
+    install_dir: "/opt/kafka"
+    temp_file: "/tmp/kafka-remote.tgz"
+
+  tasks:
+    - name: Скачиваем
+      get_url:
+        url: "{{ kafka_url }}"
+        dest: "{{ temp_file }}"
+        timeout: 300
+        validate_certs: no
+
+    - name: Создать директорию /opt/kafka
+      file:
+        path: "{{ install_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Распаковать архив Kafka
+      command:
+        cmd: tar xzf "{{ temp_file }}" -C "{{ install_dir }}" --strip-components=1
+        creates: "{{ install_dir }}/gradlew"

@@ -1,0 +1,27 @@
+---
+- name: Изменение приветствия системы (MOTD)
+  hosts: all
+  become: yes
+  
+  vars:
+    # Переменная с текстом приветствия
+    motd_message: |
+      ╔═══════════════════════════════════════╗
+      ║      HOME WORK Bulygin D. A.          ║
+      ║                                       ║  
+      ╚═══════════════════════════════════════╝
+
+  tasks:
+    - name: Создать новый файл MOTD
+      copy:
+        content: "{{ motd_message }}"
+        dest: /etc/motd
+        owner: root
+        group: root
+        mode: "0644"
+      register: motd_result
+    
+    - name: Показать результат изменения
+      debug:
+        msg: "MOTD успешно изменен! Файл: /etc/motd"
+      when: motd_result.changed

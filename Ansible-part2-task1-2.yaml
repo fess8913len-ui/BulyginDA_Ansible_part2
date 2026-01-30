@@ -1,0 +1,24 @@
+---
+- name: Установка пакета tuned
+  hosts: My
+  become: yes
+
+  tasks:
+    - name: Установка tuned из стандартных репозиториев
+      package:
+        name: tuned
+        state: present
+
+    - name: Перезагрузка systemd (для обнаружения нового юнита)
+      systemd:
+        daemon_reload: yes
+
+    - name: Запуск службы tuned
+      systemd:
+        name: tuned
+        state: started
+
+    - name: Добавление tuned в автозагрузку
+      systemd:
+        name: tuned
+        enabled: yes

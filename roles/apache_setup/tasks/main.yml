@@ -1,0 +1,49 @@
+---
+# Основные задачи роли
+- name: Установить факты о системе
+  setup:
+
+- name: Установить Apache
+  package:
+    name: "{{ apache_package }}"
+    state: present
+
+- name: Создать корневую директорию веб-сервера
+  file:
+    path: "{{ web_root }}"
+    state: directory
+    owner: "{{ apache_user }}"
+    group: "{{ apache_user }}"
+    mode: "0755"
+
+- name: Настроить index.html из шаблона
+  template:
+    src: index.html.j2
+    dest: "{{ web_root }}/index.html"
+    owner: "{{ apache_user }}"
+    group: "{{ apache_user }}"
+    mode: "0644"
+  notify: restart apache
+
+- name: Настроить файервол (для CentOS/RHEL)
+  firewalld:
+    service: http
+    permanent: yes
+    state: enabled
+    immediate: yes
+  when: ansible_os_family == "RedHat"
+  notify: restart apache
+
+- name: Настроить файервол (для Ubuntu/Debian)
+  ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+  when: ansible_os_family == "Debian"
+  notify: restart apache
+
+- name: Запустить Apache и добавить в автозагрузку
+  service:
+    name: "{{ apache_service }}"
+    state: started
+    enabled: yes

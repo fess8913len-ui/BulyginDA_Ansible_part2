@@ -1,0 +1,2 @@
+[My]
+192.168.30.153 ansible_connection=ssh ansible_user=root ansible_ssh_pass=314159265

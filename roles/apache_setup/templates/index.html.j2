@@ -1,0 +1,19 @@
+           <!DOCTYPE html>
+           <html>
+           <body>
+           <h1>Информация о системе: {{ ansible_hostname }}</h1>
+           <h3>CPU:</h3>
+           Процессор: {{ ansible_processor[1] if ansible_processor[1] is defined else ansible_processor[0] }}<br>
+           <h3>RAM:</h3>
+           Всего: {{ (ansible_memtotal_mb / 1024) | round(1) }} GB<br>
+           <h3>HDD:</h3>
+           {% for mount in ansible_mounts %}
+           {% if mount.mount == '/' %}
+           Размер: {{ (mount.size_total / 1073741824) | round(1) }} GB<br>
+           Свободно: {{ (mount.size_available / 1073741824) | round(1) }} GB<br>
+           {% endif %}
+           {% endfor %}
+           <h3>Сеть:</h3>
+           IP адрес: {{ ansible_default_ipv4.address }}<br>
+           </body>
+           </html>
